@@ -5,6 +5,10 @@ on:
   push:
     branches:
     - main
+    paths:
+    - docs/**
+    - src/**
+    - mkdocs.yml
   pull_request:
     branches:
     - main
