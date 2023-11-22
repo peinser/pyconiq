@@ -19,4 +19,16 @@ _Unofficial_ Python package to interface with the payment processor
 
 ### Installation
 
+Once the project cloned or the codespace ready, you can install the project
+dependencies. For development, you can use the `dev` extra to install the development
+dependencies.
+
+```bash
+poetry install --with=dev
+```
+or using pip:
+```bash
+pip install -e .[dev]
+```
+
 ### Getting started
