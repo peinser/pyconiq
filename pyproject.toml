@@ -77,7 +77,6 @@ lines-between-types = 1
 lines-after-imports = 2
 known-first-party = []
 required-imports = ["from __future__ import annotations"]
-profile = "black"
 
 [tool.mypy]
 strict = true
@@ -94,9 +93,8 @@ show_error_codes = true
 [tool.coverage.run]
 branch = true
 omit = [
-    "pyconiq/__init__.py",
-    "pyconiq/__version__.py",
-    "pyconiq/bin/__init__.py",
+    "src/pyconiq/__init__.py",
+    "src/pyconiq/__version__.py",
 ]
 
 [tool.coverage.report]

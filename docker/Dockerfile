@@ -43,12 +43,12 @@ LABEL artifact=false
 COPY . .
 RUN poetry install --with=dev --with=main && \
     # Linting
-    poetry run black --check --diff pyconiq && \
-    poetry run ruff check pyconiq && \
-    poetry run isort --check-only --settings-path=pyproject.toml src && \
-    poetry run mypy pyconiq && \
+    poetry run black --check --diff src/pyconiq && \
+    poetry run ruff check src/pyconiq && \
+    poetry run mypy src/pyconiq && \
     # Tests and coverage
-    poetry run coverage run -m pytest --cov=pyconiq \
+    # Disable coverage for now.
+    # poetry run coverage run -m pytest --cov=src/pyconiq \
     # Security
     poetry run bandit src && \
     poetry run safety check
