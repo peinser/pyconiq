@@ -66,6 +66,6 @@ COPY --from=builder-base ${PYSETUP_PATH}/dist/pyconiq*.whl .
 COPY ./docker/entrypoint.sh ./entrypoint.sh
 
 RUN pip install pyconiq*.whl && rm pyconiq*.whl && \
-    chmod +x ./entrypoint.sh && apt-get update
+    chmod +x ./entrypoint.sh
 
 ENTRYPOINT ./entrypoint.sh $0 $@
