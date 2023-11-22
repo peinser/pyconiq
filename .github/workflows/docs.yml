@@ -1,4 +1,5 @@
 name: Generate and deploy documentation
+run-name: Docs
 
 on:
     push:
