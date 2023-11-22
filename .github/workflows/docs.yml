@@ -1,4 +1,4 @@
-name: Docs
+name: docs
 run-name: ${{ github.actor }} is building and deploying the documentation
 
 on:
