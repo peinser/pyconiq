@@ -8,7 +8,6 @@ on:
   pull_request:
     branches:
     - main
-  workflow_dispatch:
 
 jobs:
 
@@ -17,3 +16,17 @@ jobs:
     steps:
     - name: Git Checkout
       uses: actions/checkout@v4
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+    - name: Setup Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.6.1
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
+    - name: Deploy documentation
+      run: |
+        poetry help
