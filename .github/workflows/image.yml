@@ -49,3 +49,6 @@ jobs:
 
         # Production stage
         docker build . -f docker/Dockerfile --target=production --tag ${{ vars.DOCKER_REGISTRY }}/peinser/pyconiq:$version
+
+        # Push to the remote container registry.
+        docker push ${{ vars.DOCKER_REGISTRY }}/peinser/pyconiq:$version
