@@ -2,18 +2,14 @@ site_name: pyconiq
 site_description: Unofficial Python package to interface with the payment processor Payconiq.
 site_author: Peinser
 edit_uri: edit/main/docs/
-repo_name: pypoetry_template
+repo_name: pyconiq
 repo_url: https://github.com/peinser/pyconiq
 copyright: Maintained by <a href="hello@peinser.com">Peinser</a>.
 
 nav:
 - Home:
   - Introduction: index.md
-  - Workflows: workflows.md
-  - MkDocs: mkdocs.md
   - Container registry: registry.md
-  - Dependabot: dependabot.md
-- Project structure: structure.md
 - Reference: reference/
 plugins:
 - search
@@ -25,11 +21,9 @@ plugins:
     - docs/gen_reference_pages.py
 - mkdocstrings:
     watch:
-    - src/pypoetry_template
+    - src/pyconiq
 
 theme:
-  logo: assets/project_logo.png
-  favicon: assets/project_logo.png
   name: material
   features:
   - navigation.tabs
@@ -38,7 +32,7 @@ theme:
   - toc.follow
   palette:
   - media: "(prefers-color-scheme: dark)"
-    scheme: default
+    scheme: slate
 
 extra_css:
 - stylesheets/extra.css

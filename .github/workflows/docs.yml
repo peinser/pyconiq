@@ -1,18 +1,18 @@
-name: Docs
+name: docs
 run-name: ${{ github.actor }} is building and deploying the documentation
 
 on:
-    push:
-        branches:
-        - main
-    pull_request:
-        branches:
-        - main
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
 
 jobs:
 
-    build:
-        runs-on: ubuntu-latest
-        steps:
-        - name: Git Checkout
-          uses: actions/checkout@v3
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Git Checkout
+      uses: actions/checkout@v3
