@@ -1,0 +1,8 @@
+{
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.mypyEnabled": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.rulers": [88, 120]
+}

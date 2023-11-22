@@ -1,0 +1,99 @@
+[tool.poetry]
+name = "pyconiq"
+version = "0.0.1-dev"
+description = "Archive service of ADCS. Provides API's to search for and manipulate documents."
+authors = [
+    "Joeri Hermans <joeri@peinser.com>",
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+uvloop = "^0.17.0"
+ujson = "^5.8.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+bpython = "^0.24"
+anybadge = "^1.14.0"
+mypy = "^1.4.1"
+ruff = "^0.0.280"
+pylint = "^2.17.5"
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
+isort = "^5.12.0"
+pytest-asyncio = "^0.21.1"
+types-ujson = "^5.8.0.1"
+
+[tool.ruff]
+fix = false
+unfixable = [
+    "ERA", # do not autoremove commented out code
+]
+target-version = "py311"
+line-length = 88
+extend-select = [
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "ERA", # flake8-eradicate/eradicate
+    "I",   # isort
+    "N",   # pep8-naming
+    "PIE", # flake8-pie
+    "PGH", # pygrep
+    "RUF", # ruff checks
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "TID", # flake8-tidy-imports
+    "UP",  # pyupgrade
+]
+extend-exclude = [
+    "docs/*",
+    "tests/fixtures/exceptions/*"
+]
+
+ignore = [
+    "E722", # Bare exceptions
+]
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.isort]
+force-single-line = true
+lines-between-types = 1
+lines-after-imports = 2
+known-first-party = []
+required-imports = ["from __future__ import annotations"]
+
+[tool.mypy]
+strict = true
+files = ["pyconiq", "tests"]
+pretty = true
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "pyconiq/__init__.py",
+    "pyconiq/__version__.py",
+    "pyconiq/bin/__init__.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 75
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError"
+]
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+[tool.isort]
+profile = "black"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,10 @@
+[FORMAT]
+max-line-length=88
+
+
+[DESIGN]
+max-attributes=12
+
+
+[MESSAGES CONTROL]
+disable=c-extension-no-member
