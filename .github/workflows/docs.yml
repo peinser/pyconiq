@@ -31,4 +31,4 @@ jobs:
       run: |
         git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/peinser/pyconiq.git
         poetry install --with docs
-        poetry run mkdocs gh-deploy --clean --verbos
+        poetry run mkdocs gh-deploy --clean --verbose
