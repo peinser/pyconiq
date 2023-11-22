@@ -12,7 +12,8 @@
 
 --------------------------------------------------------------------------------
 
-_Unofficial_ Python package to interface with the payment processor [Payconiq](https://www.payconiq.com/).
+_Unofficial_ Python package to interface with the payment processor
+[Payconiq](https://www.payconiq.com/).
 
 ## Introduction
 
