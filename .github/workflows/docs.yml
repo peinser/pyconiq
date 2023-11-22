@@ -1,5 +1,5 @@
 name: Docs
-run-name: Generate and deploy documentation
+run-name: ${{ github.actor }} is building and deploying the documentation
 
 on:
     push:
