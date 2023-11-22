@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pyconiq"
 version = "0.0.1-dev"
-description = "Archive service of ADCS. Provides API's to search for and manipulate documents."
+description = "Unofficial Python package to interface with the payment processor Payconiq."
 authors = [
     "Joeri Hermans <joeri@peinser.com>",
 ]
