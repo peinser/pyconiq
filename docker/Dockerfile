@@ -43,11 +43,11 @@ LABEL artifact=false
 COPY . .
 RUN poetry install --with=dev --with=main && \
     # Linting
-    poetry run black --check --diff archive && \
-    poetry run ruff check archive && \
-    poetry run mypy archive && \
+    poetry run black --check --diff pyconiq && \
+    poetry run ruff check pyconiq && \
+    poetry run mypy pyconiq && \
     # Tests and coverage
-    poetry run coverage run -m pytest --cov=archive
+    poetry run coverage run -m pytest --cov=pyconiq
 
 # production ##################################################################
 
@@ -58,10 +58,10 @@ LABEL artifact=true
 WORKDIR /app
 
 COPY --from=builder-base $VENV_PATH $VENV_PATH
-COPY --from=builder-base ${PYSETUP_PATH}/dist/archive*.whl .
+COPY --from=builder-base ${PYSETUP_PATH}/dist/pyconiq*.whl .
 COPY ./docker/entrypoint.sh ./entrypoint.sh
 
-RUN pip install archive*.whl && rm archive*.whl && \
+RUN pip install pyconiq*.whl && rm pyconiq*.whl && \
     chmod +x ./entrypoint.sh && apt-get update
 
 ENTRYPOINT ./entrypoint.sh $0 $@
