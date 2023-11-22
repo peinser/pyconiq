@@ -2,6 +2,7 @@ name: Documentation
 run-name: ${{ github.actor }} is building and deploying the documentation
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - main
