@@ -1,4 +1,4 @@
-name: docs
+name: Container Image
 run-name: ${{ github.actor }} is building a new image
 
 on:
