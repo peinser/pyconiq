@@ -45,9 +45,13 @@ RUN poetry install --with=dev --with=main && \
     # Linting
     poetry run black --check --diff pyconiq && \
     poetry run ruff check pyconiq && \
+    poetry run isort --check-only --settings-path=pyproject.toml src && \
     poetry run mypy pyconiq && \
     # Tests and coverage
-    poetry run coverage run -m pytest --cov=pyconiq
+    poetry run coverage run -m pytest --cov=pyconiq \
+    # Security
+    poetry run bandit src && \
+    poetry run safety check
 
 # production ##################################################################
 
