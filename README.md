@@ -34,3 +34,5 @@ pip install -e .[dev]
 ```
 
 ### Getting started
+
+#### Onboarding as a merchant with Payconiq
