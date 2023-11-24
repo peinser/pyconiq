@@ -9,14 +9,18 @@ from __future__ import annotations
 
 import asyncio
 
+import pyconiq.merchant
 import pyconiq.qr  # type: ignore[import-untyped]
 import uvloop
 
 
 async def main() -> None:
-    # First, we need a QR code that is associated with our PoS (point of sale).
+    # Set your merchant configuration.
+    merchant = pyconiq.merchant.BaseMerchant(merchant_id="655dd4b3748285422d94a48b")
+
+    # Second, we need a QR code that is associated with our PoS (point of sale).
     # In this case, the identifier of the PoS is `test`.
-    qr = pyconiq.qr.static(pos="test")
+    qr = pyconiq.qr.static(merchant=merchant, pos="test")
     # Show the QR code in the terminal.
     qr.print_ascii(tty=True)
 
