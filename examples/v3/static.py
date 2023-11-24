@@ -9,23 +9,37 @@ from __future__ import annotations
 
 import asyncio
 
-import pyconiq.merchant
-import pyconiq.qr  # type: ignore[import-untyped]
 import uvloop
+
+import pyconiq  # type: ignore[import-untyped]
+import pyconiq.qr  # type: ignore[import-untyped]
+
+from pyconiq.integrations.static import StaticIntegration  # type: ignore[import-untyped]
 
 
 async def main() -> None:
+    # Assign a unique identifier to your point of sale.
+    point_of_sale_id = "test"
+
     # Set your merchant configuration.
-    merchant = pyconiq.merchant.BaseMerchant(merchant_id="655dd4b3748285422d94a48b")
+    merchant = pyconiq.merchant(merchant_id="655dd4b3748285422d94a48b")
 
     # Second, we need a QR code that is associated with our PoS (point of sale).
     # In this case, the identifier of the PoS is `test`.
-    qr = pyconiq.qr.static(merchant=merchant, pos="test")
+    qr = pyconiq.qr.static(merchant=merchant, pos=point_of_sale_id)
     # Show the QR code in the terminal.
     qr.print_ascii(tty=True)
 
-    # Initiate a payment request.
-    # TODO Implement
+    # Initiate a payment request with a static QR integration.
+    integration = StaticIntegration(merchant=merchant)
+    payment = await integration.request(
+        amount=2000,  # In Eurocent
+        pos=point_of_sale_id,
+        reference="PYCONIQ TEST",
+    )
+
+    # Object denoting the current state of the payment.
+    print(payment)
 
 
 with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:

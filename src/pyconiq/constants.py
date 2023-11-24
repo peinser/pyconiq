@@ -32,4 +32,5 @@ PYCONIQ_API_KEY_APP2APP: str | None = os.getenv("PYCONIQ_API_KEY_APP2APP", None)
 
 PYCONIQ_DEFAULT_MERCHANT: str | None = os.getenv("PYCONIQ_DEFAULT_MERCHANT", None)
 
+PYCONIQ_API_BASE: str = os.getenv("PYCONIQ_API_BASE", "https://api.payconiq.com")
 PYCONIQ_BASE: str = os.getenv("PYCONIQ_BASE", "https://payconiq.com")

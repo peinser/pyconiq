@@ -8,14 +8,20 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from pyconiq.merchant import BaseMerchant
+    from pyconiq.concepts import Merchant
 
 
 class BaseIntegration:
-    def __init__(self, merchant: BaseMerchant):
+    def __init__(self, merchant: Merchant, key: str, base: str):
         super().__init__()
+        self._base = base
         self._merchant = merchant
+        self._key = key
 
     @property
-    def merchant(self) -> BaseMerchant:
+    def base(self) -> str:
+        return self._base
+
+    @property
+    def merchant(self) -> Merchant:
         return self._merchant

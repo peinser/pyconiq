@@ -12,7 +12,7 @@ from pyconiq.constants import PYCONIQ_DEFAULT_MERCHANT
 
 
 if TYPE_CHECKING:
-    from pyconiq.merchant import BaseMerchant
+    from pyconiq.concepts import Merchant
 
 
 def static(
@@ -20,7 +20,7 @@ def static(
     border: int = 1,
     box_size: int = 10,
     error_correction: int = qrcode.constants.ERROR_CORRECT_L,
-    merchant: BaseMerchant | str | None = PYCONIQ_DEFAULT_MERCHANT,
+    merchant: Merchant | str | None = PYCONIQ_DEFAULT_MERCHANT,
 ) -> qrcode.QRCode:
     r"""
     Generates a static QR code for the Payconiq Instore (v3) API integrations. These
