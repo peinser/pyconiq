@@ -59,6 +59,30 @@ merchant identifier. In the wild, the most common integration a consumer will ex
 specific _Point of Sale_ (PoS) of a merchant. Meaning, a Point of Sale is uniquely
 identified by the tuple (Merchant ID and PoS ID), the latter is in _your_ control.
 
+### Environment variables
+
+`pyconiq` supports to inject several runtime defaults through environment variables.
+This is especially useful when targetting the `EXT` infrastructure compared to the
+_default_ `PROD` infrastructure.
+
+| Variable | Default | Context |
+|---|---|---|
+| `PYCONIQ_BASE` | `https://payconiq.com` | TODO |
+| `PYCONIQ_API_BASE` | `https://api.payconiq.com` | The primary API endpoint of Payconiq (or some mock service). By default this variable will target the Payconiq production environment. For the `EXT` environment this variable should be set to `https://api.ext.payconiq.com`. Note that setting this environment variable is not necessary. It can be defined in the codebase when allocating specific integrations. |
+| `PYCONIQ_DEFAULT_MERCHANT` | `None` | Default Merchant ID that will be used when allocating merchants. |
+| `PYCONIQ_API_KEY_STATIC` | `None` | Default API key for the Static QR code integration. |
+| `PYCONIQ_API_KEY_INVOICE` | `None` | Default API key for the Invoice integration whenever no key is manually specified. |
+| `PYCONIQ_API_KEY_RECEIPT` | `None` | Default API key for the Receipt integration whenever no key is manually specified. |
+| `PYCONIQ_API_KEY_APP2APP` | `None` | Default API key for the App2App integration whenever no key is manually specified. |                                                                                                                                                                                    |
+
+TODO
+
+### Example
+
+```python
+import pyconiq as pq
+```
+
 **Important**: the infrastructure supporting the External build is switched off
 each day from 21h30(CET) to 6h00 (CET) and during the weekends from Friday 21h30 (CET)
 until Monday 6h00 (CET).
