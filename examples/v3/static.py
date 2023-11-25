@@ -34,7 +34,7 @@ async def main() -> None:
 
     # Initiate a payment request with a static QR integration.
     integration = StaticIntegration(merchant=merchant)
-    transaction = await integration.request(
+    transaction = await integration.create(
         amount=2000,  # In Eurocent
         pos=point_of_sale_id,
         reference="PYCONIQ TEST",
