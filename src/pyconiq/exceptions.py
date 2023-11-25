@@ -6,13 +6,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pyconiq.integrations.base import Transaction
-
 
 if TYPE_CHECKING:
     from typing import Any
 
     from pyconiq.integrations.base import BaseIntegration
+    from pyconiq.integrations.base import Transaction
 
 
 class UnauthorizedError(Exception):

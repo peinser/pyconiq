@@ -271,6 +271,9 @@ class Transaction:
     def succeeded(self) -> bool:
         return self.status == TransactionStatus.SUCCEEDED
 
+    def cancelled(self) -> bool:
+        return self.status == TransactionStatus.CANCELLED
+
     def terminal(self) -> bool:
         return TransactionStatus.terminal(self.status)
 

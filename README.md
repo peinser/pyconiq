@@ -75,12 +75,54 @@ _default_ `PROD` infrastructure.
 | `PYCONIQ_API_KEY_RECEIPT` | `None` | Default API key for the Receipt integration whenever no key is manually specified. |
 | `PYCONIQ_API_KEY_APP2APP` | `None` | Default API key for the App2App integration whenever no key is manually specified. |                                                                                                                                                                                    |
 
-TODO
-
 ### Example
 
+First, before you use the [Static QR](https://developer.payconiq.com/online-payments-dock/#payconiq-instore-v3-static-qr-sticker)
+integration, you need a QR code for your customers to scan. You can obtain this QR
+code through Payconiq's API. However, `pyconiq` provides a utility to generate
+this on the fly for you, with various error correction levels and customization options.
+This functionality is powered by the awesome [`qrcode`](https://github.com/lincolnloop/python-qrcode) module.
+
 ```python
-import pyconiq as pq
+import pyconiq.qr
+
+# Assign a unique identifier to your point of sale.
+# This is managed by us, the merchant.
+point_of_sale_id = "test"
+
+# Set your merchant configuration, this will implicetly use the
+# `PYCONIQ_DEFAULT_MERCHANT` environment variable for populating
+# the merchant identifier.
+merchant = pyconiq.merchant()
+
+# Second, we need a QR code that is associated with our PoS (point of sale).
+# In this case, the identifier of the PoS is `test`.
+qr = pyconiq.qr.static(merchant=merchant, pos=point_of_sale_id)
+# Show the QR code in the terminal.
+qr.print_ascii(tty=True)
+```
+
+this produces the following QR code (in your terminal) for our test Merchant
+
+```console
+█▀▀▀▀▀▀▀██▀█████▀▀▀█▀█▀▀▀▀█▀▀▀▀▀▀▀█
+█ █▀▀▀█ █▄ ▀ ▄█▀█▀█▄█▀  ███ █▀▀▀█ █
+█ █   █ █▄▄▀▄▀▀▀▀▄▄▄▀▀▀▄▀▀█ █   █ █
+█ ▀▀▀▀▀ █ █ █▀▄ ▄ █▀█▀▄ █ █ ▀▀▀▀▀ █
+█▀▀▀▀▀█▀▀▀▀▀█ ▄▀ █▀▄▄▀▄▀▄█▀█▀█▀█▀██
+█▀▄██▄█▀██ █▀▀██▄▄█ ▄█ ▀▄▄▄▄██▀▄ ▄█
+███ ▄▀▀▀██ ▄ ██▄█ ▀▀▄▀▄█ ▀▄█  ▀▄███
+█  █▀▄▀▀▀█▄▄█▄   ▀██▄█  ▄▄▀ ▀▀██ ▄█
+████▄  ▀██▀ █ ▄▀ █▀ █ ▄▀█▄▀▄▀ █▄▀██
+█▄ █▄▄ ▀▀▄█▀▀▀██▄▄▄▀▄▀▄█▄▄█▄█▀ █ ▄█
+█▀█▀▀▄▀▀▄▄ █ ██▄█▄▀▄█ ▄█ ▀ ▄▀ █▄▀██
+█ █▄▀▄▄▀  ▄▀█▄   █▀ ▄█▄▄▄ ▀ █▀ █ ▄█
+█ █ █▀▄▀ █▄▀█ ▄▀  ▀ ▀▀▄▄▀▀   ▀ ▄█▀█
+█▀▀▀▀▀▀▀█ █▄▀▀██▀  ▄▄█▄ ▀ █▀█ █ ▀▄█
+█ █▀▀▀█ █▀▀  ██▄▀▀▀█▄▀▄▄▄ ▀▀▀ ▄▄▀▄█
+█ █   █ █ █▀█▄  ▀ ██▄█   █▄▀▄▄▀ ▄▄█
+█ ▀▀▀▀▀ █ ▄▄█ ▄▀ ▄▀▄▀▀▄██▀ ▄▀▀ ▄▀██
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 ```
 
 **Important**: the infrastructure supporting the External build is switched off
