@@ -12,10 +12,6 @@ on:
     - src/**
     - tests/**
     - pyproject.yml
-  pull_request:
-    branches:
-    - main
-    - development
 
 jobs:
 
