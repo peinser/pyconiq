@@ -10,12 +10,13 @@ from __future__ import annotations
 import asyncio
 import pprint
 
-import uvloop
-
 import pyconiq  # type: ignore[import-untyped]
 import pyconiq.qr  # type: ignore[import-untyped]
+import uvloop
 
-from pyconiq.integrations.static import StaticIntegration  # type: ignore[import-untyped]
+from pyconiq.integrations.static import (  # type: ignore[import-untyped]
+    StaticIntegration,
+)
 
 
 async def main() -> None:
@@ -43,8 +44,8 @@ async def main() -> None:
     pprint.pprint(transaction.json, compact=True, indent=2)
 
     # Cancel the pending transaction.
-    cancelled = await transaction.cancel()
-    print("Cancelled?", cancelled)
+    await transaction.cancel()
+    print(transaction.status)
 
 
 with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:

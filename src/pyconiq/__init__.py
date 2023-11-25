@@ -4,4 +4,4 @@ pyconiq: an unofficial Python package to interface with the payment processor Pa
 
 from __future__ import annotations
 
-from pyconiq.concepts import merchant
+from pyconiq.concepts import merchant  # noqa: F401

@@ -4,6 +4,8 @@ r"""
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import StrEnum
+from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import aiohttp
@@ -41,7 +43,7 @@ class StaticIntegration(BaseIntegration):
     async def cancel(
         self,
         transaction: Transaction,
-    ) -> bool:
+    ) -> None:
         r"""
         Cancels the specified transaction.
 
@@ -50,16 +52,33 @@ class StaticIntegration(BaseIntegration):
         endpoint = transaction.links.cancel
         assert endpoint is not None
 
-        print(endpoint)
-
         async with aiohttp.ClientSession() as session, session.delete(
             url=endpoint,
             headers={"Authorization": f"Bearer {self._key}"},
         ) as response:
-            print(response.status)
-            print(await response.text())
+            if not response.ok:
+                status = response.status
+                response = await response.json()
+                match status:
+                    case HTTPStatus.UNAUTHORIZED:
+                        raise UnauthorizedError(response, self)
+                    case HTTPStatus.FORBIDDEN:
+                        raise ForbiddenError(response, self)
+                    case HTTPStatus.NOT_FOUND:
+                        raise UnknownTransactionError(response, transaction)
+                    case HTTPStatus.UNPROCESSABLE_ENTITY:
+                        raise TransactionNotPendingError(response, transaction)
+                    case HTTPStatus.TOO_MANY_REQUESTS:
+                        raise RateLimitError(response, self)
+                    case HTTPStatus.INTERNAL_SERVER_ERROR:
+                        raise TechnicalError(response, self)
+                    case HTTPStatus.SERVICE_UNAVAILABLE:
+                        raise PayconiqUnavailableError(response, self)
+                    case _:
+                        raise UnkownError(response)
 
-        return True
+        # Set the transaction to CANCELLED.
+        transaction.status = TransactionStatus.CANCELLED
 
     async def request(
         self,
@@ -107,18 +126,18 @@ class StaticIntegration(BaseIntegration):
 
 @dataclass
 class TransactionLinks:
+    cancel: str | None
+    deeplink: str | None
+    qr: str | None
+
     KEY_LINKS: Final = "_links"
     KEY_CANCEL: Final = "cancel"
     KEY_DEEPLINK: Final = "deeplink"
     KEY_QR: Final = "qrcode"
     KEY_HREF: Final = "href"
 
-    cancel: str | None
-    deeplink: str | None
-    qr: str | None
-
     @staticmethod
-    def parse(self, state: dict[str, Any]) -> TransactionLinks:
+    def parse(state: dict[str, Any]) -> TransactionLinks:
         r"""
         Utility method that parses the specified transaction state into a
         TransactionLinks data class for easy link accessability.
@@ -138,6 +157,29 @@ class TransactionLinks:
         return TransactionLinks(cancel=cancel, deeplink=deeplink, qr=qr)
 
 
+class TransactionStatus(StrEnum):
+    CANCELLED = "CANCELLED"
+    PENDING = "PENDING"
+
+    @staticmethod
+    def parse(state: dict[str, Any]) -> TransactionStatus:
+        r"""
+        Returns a TransactionStatus instance based on the raw state of a Transaction.
+        """
+        status = state.get("status", None)
+
+        assert status is not None
+
+        status = status.upper()
+
+        if status not in TransactionStatus:
+            raise UnknownTransactionStatusError(
+                f"{status} is not a valid transaction status."
+            )
+
+        return TransactionStatus[status]
+
+
 class Transaction:
     def __init__(
         self,
@@ -154,7 +196,11 @@ class Transaction:
 
     @property
     def status(self) -> str:
-        return self._state.get("state")
+        return TransactionStatus.parse(self._state)
+
+    @status.setter
+    def status(self, status: TransactionStatus) -> None:
+        self._state["status"] = status
 
     @property
     def reference(self) -> str | None:
@@ -164,11 +210,11 @@ class Transaction:
     def json(self) -> dict:
         return self._state
 
-    def pending(self) -> bool:
-        return self.status == "PENDING"
+    def is_pending(self) -> bool:
+        return self.status == TransactionStatus.PENDING
 
-    async def cancel(self) -> bool:
-        return await self._integration.cancel(self)
+    async def cancel(self) -> None:
+        await self._integration.cancel(self)
 
     def __str__(self) -> str:
         return ujson.dumps(
