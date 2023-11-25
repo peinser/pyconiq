@@ -21,14 +21,23 @@ _Unofficial_ `async` Python module to interface with the payment processor
 
 ### Installation
 
-Once the project cloned or the codespace ready, you can install the project
+The module can be directly installed through pip:
+
+```bash
+pip install pyconiq
+```
+
+For development purposes, and once the project cloned or the codespace ready,
+you can install the project
 dependencies. For development, you can use the `dev` extra to install the development
 dependencies.
 
 ```bash
 poetry install --with=dev
 ```
-or using pip:
+
+Or using pip:
+
 ```bash
 pip install -e .[dev]
 ```
@@ -36,3 +45,9 @@ pip install -e .[dev]
 ### Getting started
 
 #### Onboarding as a merchant with Payconiq
+
+TODO
+
+### Static QR integration
+
+## Roadmap
