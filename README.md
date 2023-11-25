@@ -29,7 +29,7 @@ pip install pyconiq
 
 For development purposes, and once the project cloned or the codespace ready,
 you can install the project
-dependencies. For development, you can use the `dev` extra to install the development
+dependencies. You can use the `dev` extra to install the development
 dependencies.
 
 ```bash
@@ -44,10 +44,19 @@ pip install -e .[dev]
 
 ### Getting started
 
-#### Onboarding as a merchant with Payconiq
+Before you can integrate your application with [Payconiq](https://www.payconiq.com/),
+you need access to a so-called _Merchant_ profile. The process of onboarding with
+Payconiq, both for their development (`EXT`) and production (`PROD`) environment
+involves opening a support ticket (e-mail) and exchanging some information to setup
+your account. This involves your mobile phone number, address, Tax ID (if availablef)
+amongst others. The onboarding procedure it outlined
+[here](https://developer.payconiq.com/online-payments-dock/).
 
 TODO
 
-### Static QR integration
+Detailed information regarding the Payconiq's API specification can be found
+[here](https://developer.payconiq.com/online-payments-dock/).
 
 ## Roadmap
+
+TODO
