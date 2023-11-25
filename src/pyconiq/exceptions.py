@@ -80,7 +80,7 @@ class TransactionNotPendingError(Exception):
     def __init__(
         self,
         response: dict[str, Any],
-        transaction: Transaction,
+        transaction: pyconiq.integrations.base.Transaction,
     ) -> None:
         super().__init__(
             f"Transaction {transaction.id} could not be cancelled because"
