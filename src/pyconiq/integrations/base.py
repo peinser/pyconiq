@@ -145,6 +145,20 @@ class TransactionStatus(StrEnum):
     SUCCEEDED: Final = "SUCCEEDED"
 
     @staticmethod
+    def terminal(value: TransactionStatus) -> bool:
+        r"""
+        Indicates whether a transaction state carries the mark `terminal`. A
+        transaction marked `terminal` implies that the transaction does not
+        changes state. That is, the state is final.
+        """
+        return value in {
+            TransactionStatus.CANCELLED,
+            TransactionStatus.EXPIRED,
+            TransactionStatus.FAILED,
+            TransactionStatus.SUCCEEDED,
+        }
+
+    @staticmethod
     def parse(state: dict[str, Any]) -> TransactionStatus:
         r"""
         Returns a TransactionStatus instance based on the raw state of a Transaction.
@@ -224,7 +238,7 @@ class Transaction:
         return identifier
 
     @property
-    def status(self) -> str:
+    def status(self) -> TransactionStatus:
         return TransactionStatus.parse(self._state)
 
     @status.setter
@@ -248,11 +262,17 @@ class Transaction:
         assert state is not None
         self._state = state
 
+    def expired(self) -> bool:
+        return self.status == TransactionStatus.EXPIRED
+
     def pending(self) -> bool:
         return self.status == TransactionStatus.PENDING
 
     def succeeded(self) -> bool:
         return self.status == TransactionStatus.SUCCEEDED
+
+    def terminal(self) -> bool:
+        return TransactionStatus.terminal(self.status)
 
     async def cancel(self) -> None:
         await self._integration.cancel(self)

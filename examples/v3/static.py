@@ -58,6 +58,18 @@ async def main() -> None:
     await transaction.update()
     pprint.pprint(transaction.json, compact=True, indent=2)
 
+    # Enough demonstrations :) Just scan the QR code now.
+    while not transaction.terminal():
+        await asyncio.sleep(1)
+        await transaction.update()
+
+    if transaction.expired():
+        print("Failed to pay on time :(")
+    elif transaction.succeeded():
+        print("Payed!")
+    else:
+        print("Some other status :/")
+
 
 with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:
     runner.run(main())
