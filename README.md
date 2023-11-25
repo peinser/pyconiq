@@ -52,11 +52,22 @@ your account. This involves your mobile phone number, address, Tax ID (if availa
 amongst others. The onboarding procedure it outlined
 [here](https://developer.payconiq.com/online-payments-dock/).
 
-TODO
+Once onboarded by the support team, you'll most likely have access to the
+`EXT` infrastructure. This means you have access to the necessary API keys and unique
+merchant identifier. In the wild, the most common integration a consumer will experience
+(we think) is the _Static QR_ code integration. This QR code is uniquely tied to a
+specific _Point of Sale_ (PoS) of a merchant. Meaning, a Point of Sale is uniquely
+identified by the tuple (Merchant ID and PoS ID), the latter is in _your_ control.
+
+**Important**: the infrastructure supporting the External build is switched off
+each day from 21h30(CET) to 6h00 (CET) and during the weekends from Friday 21h30 (CET)
+until Monday 6h00 (CET).
 
 Detailed information regarding the Payconiq's API specification can be found
 [here](https://developer.payconiq.com/online-payments-dock/).
 
 ## Roadmap
 
-TODO
+Currently, only the [Static QR](https://developer.payconiq.com/online-payments-dock/#payconiq-instore-v3-static-qr-sticker) code integration is supported.
+In the near future,
+we intent to support the [Invoice](https://developer.payconiq.com/online-payments-dock/#payconiq-invoice-v3-invoice) integration.
