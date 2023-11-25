@@ -48,8 +48,8 @@ Before you can integrate your application with [Payconiq](https://www.payconiq.c
 you need access to a so-called _Merchant_ profile. The process of onboarding with
 Payconiq, both for their development (`EXT`) and production (`PROD`) environment
 involves opening a support ticket (e-mail) and exchanging some information to setup
-your account. This involves your mobile phone number, address, Tax ID (if availablef)
-amongst others. The onboarding procedure it outlined
+your account. In particular, your mobile phone number, address, Tax ID (if availablef),
+and company name amongst others. The onboarding procedure is outlined
 [here](https://developer.payconiq.com/online-payments-dock/).
 
 Once onboarded by the support team, you'll most likely have access to the
