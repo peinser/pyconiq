@@ -14,7 +14,7 @@
 
 --------------------------------------------------------------------------------
 
-_Unofficial_ Python package to interface with the payment processor
+_Unofficial_ `async` Python module to interface with the payment processor
 [Payconiq](https://www.payconiq.com/).
 
 ## Introduction

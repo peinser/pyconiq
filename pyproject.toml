@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyconiq"
-version = "0.0.1-dev"
+version = "0.0.1.dev0"
 description = "Unofficial Python package to interface with the payment processor Payconiq."
 authors = [
     "Joeri Hermans <joeri@peinser.com>",
