@@ -3,28 +3,18 @@ r"""
 
 from __future__ import annotations
 
-from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import aiohttp
 
 from pyconiq.constants import PYCONIQ_API_BASE
 from pyconiq.constants import PYCONIQ_API_KEY_STATIC
-from pyconiq.exceptions import ForbiddenTransactionError
-from pyconiq.exceptions import PayconiqTechnicalError
-from pyconiq.exceptions import PayconiqUnavailableError
-from pyconiq.exceptions import RateLimitError
-from pyconiq.exceptions import TransactionNotPendingError
-from pyconiq.exceptions import UnauthorizedError
-from pyconiq.exceptions import UnknownTransactionError
 from pyconiq.integrations.base import BaseIntegration
 from pyconiq.integrations.base import Transaction
 from pyconiq.integrations.base import TransactionStatus
 
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from pyconiq.concepts import Merchant
 
 
@@ -63,24 +53,12 @@ class StaticIntegration(BaseIntegration):
         ) as response:
             if not response.ok:
                 status = response.status
-                payload: dict[str, Any] = await response.json()
-                match status:
-                    case HTTPStatus.UNAUTHORIZED:
-                        raise UnauthorizedError(payload, self)
-                    case HTTPStatus.FORBIDDEN:
-                        raise ForbiddenTransactionError(payload, self)
-                    case HTTPStatus.NOT_FOUND:
-                        raise UnknownTransactionError(payload, transaction)
-                    case HTTPStatus.UNPROCESSABLE_ENTITY:
-                        raise TransactionNotPendingError(payload, transaction)
-                    case HTTPStatus.TOO_MANY_REQUESTS:
-                        raise RateLimitError(payload)
-                    case HTTPStatus.INTERNAL_SERVER_ERROR:
-                        raise PayconiqTechnicalError(payload)
-                    case HTTPStatus.SERVICE_UNAVAILABLE:
-                        raise PayconiqUnavailableError(payload)
-                    case _:
-                        raise Exception(payload)
+                self._handle_api_error(
+                    status=status,
+                    payload=await response.json(),
+                    transaction=transaction,
+                )
+                # Note, this line won't be reached as an exception will be thrown.
 
         # Set the transaction to CANCELLED.
         transaction.status = TransactionStatus.CANCELLED

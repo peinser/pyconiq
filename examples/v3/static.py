@@ -45,7 +45,18 @@ async def main() -> None:
 
     # Cancel the pending transaction.
     await transaction.cancel()
-    print(transaction.status)
+
+    # It is also possible to fetch a transaction by its ID. (re-use ID for ease).
+    transaction = await integration.details(transaction.id)
+    pprint.pprint(transaction.json, compact=True, indent=2)
+
+    # You can also update the state of a transaction. This can be done through
+    # the integration interface as.
+    await integration.update(transaction)
+
+    # Or simply directly through the transaction object.
+    await transaction.update()
+    pprint.pprint(transaction.json, compact=True, indent=2)
 
 
 with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:

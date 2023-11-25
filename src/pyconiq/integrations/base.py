@@ -10,10 +10,18 @@ from abc import ABC
 from abc import abstractmethod
 from dataclasses import dataclass
 from enum import StrEnum
+from http import HTTPStatus
 from typing import TYPE_CHECKING
 
+import aiohttp
 import ujson
 
+from pyconiq.exceptions import ForbiddenTransactionError
+from pyconiq.exceptions import PayconiqTechnicalError
+from pyconiq.exceptions import PayconiqUnavailableError
+from pyconiq.exceptions import RateLimitError
+from pyconiq.exceptions import UnauthorizedError
+from pyconiq.exceptions import UnknownTransactionError
 from pyconiq.exceptions import UnknownTransactionStatusError
 
 
@@ -35,6 +43,57 @@ class BaseIntegration(ABC):
     def _headers(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self._key}"}
 
+    def _handle_api_error(
+        self,
+        status: int,
+        payload: dict[str, Any],
+        transaction: Transaction | str,
+    ) -> None:
+        r"""
+        Procedure that handles the specified HTTP error given a certain transaction
+        or transaction identifier. Calling this method will always throw an exception.
+        In particular, this is an internal method that will be called whenever an
+        API error has been detected.
+        """
+        match status:
+            case HTTPStatus.UNAUTHORIZED:
+                raise UnauthorizedError(payload, self)
+            case HTTPStatus.FORBIDDEN:
+                raise ForbiddenTransactionError(payload, self)
+            case HTTPStatus.NOT_FOUND:
+                raise UnknownTransactionError(payload, transaction)
+            case HTTPStatus.TOO_MANY_REQUESTS:
+                raise RateLimitError(payload)
+            case HTTPStatus.INTERNAL_SERVER_ERROR:
+                raise PayconiqTechnicalError(payload)
+            case HTTPStatus.SERVICE_UNAVAILABLE:
+                raise PayconiqUnavailableError(payload)
+            case _:
+                raise Exception(payload)
+
+    async def _transaction_state(self, transaction: str) -> dict[str, Any]:
+        r"""
+        Fetches a state object from Payconiq based on the provided transaction
+        identifier. If any error occurs, one of the common `pyconiq` exceptions
+        will be thrown. In particular, those defined in `_handle_api_error`.
+        """
+        assert transaction is not None and isinstance(transaction, str)
+
+        async with aiohttp.ClientSession() as session, session.get(
+            url=f"{self._base}/v3/payments/{transaction}",
+            headers=self._headers,
+        ) as response:
+            payload = await response.json()
+            if not response.ok:
+                self._handle_api_error(
+                    status=response.status,
+                    payload=payload,
+                    transaction=transaction,
+                )
+                # Note, this line won't be reached as an exception will be thrown.
+
+            return payload
+
     @property
     def base(self) -> str:
         return self._base
@@ -44,12 +103,35 @@ class BaseIntegration(ABC):
         return self._merchant
 
     @abstractmethod
-    async def create(self, *args: Any, **kwargs: Any) -> Transaction:
+    async def cancel(self, transaction: Transaction) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    async def cancel(self, transaction: Transaction) -> None:
+    async def create(self, *args: Any, **kwargs: Any) -> Transaction:
         raise NotImplementedError
+
+    async def update(
+        self,
+        transaction: Transaction,
+    ) -> None:
+        r"""
+        Synchronizes the state of the specified transaction with Payconiq. Note that,
+        if any API error occurs, an exception will be thrown corresponding to the
+        API error of interest.
+        """
+        transaction.state = await self._transaction_state(transaction.id)
+
+    async def details(
+        self,
+        transaction: str,
+    ) -> Transaction:
+        r"""
+        Fetches a transactions based on the specified transaction or payment identifier.
+        """
+        return Transaction(
+            integration=self,
+            **await self._transaction_state(transaction),
+        )
 
 
 class TransactionStatus(StrEnum):
@@ -157,6 +239,15 @@ class Transaction:
     def json(self) -> dict:
         return self._state
 
+    @property
+    def state(self) -> dict[str, Any]:
+        return self._state
+
+    @state.setter
+    def state(self, state: dict[str, Any]) -> None:
+        assert state is not None
+        self._state = state
+
     def pending(self) -> bool:
         return self.status == TransactionStatus.PENDING
 
@@ -165,6 +256,9 @@ class Transaction:
 
     async def cancel(self) -> None:
         await self._integration.cancel(self)
+
+    async def update(self) -> None:
+        await self._integration.update(self)
 
     def __str__(self) -> str:
         return ujson.dumps(

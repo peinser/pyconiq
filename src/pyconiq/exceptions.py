@@ -6,12 +6,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pyconiq.integrations.base import Transaction
+
 
 if TYPE_CHECKING:
     from typing import Any
 
     from pyconiq.integrations.base import BaseIntegration
-    from pyconiq.integrations.static import Transaction
 
 
 class UnauthorizedError(Exception):
@@ -63,11 +64,14 @@ class UnknownTransactionError(Exception):
     def __init__(
         self,
         response: dict[str, Any],
-        transaction: Transaction,
+        transaction: Transaction | str,
     ) -> None:
-        super().__init__(f"Transaction {transaction.id} could not be found.")
+        transaction_id = (
+            transaction.id if isinstance(transaction, Transaction) else transaction
+        )
+        super().__init__(f"Transaction {transaction_id} could not be found.")
         self.response = response
-        self.transaction = transaction
+        self.transaction = transaction_id
 
 
 class TransactionNotPendingError(Exception):
