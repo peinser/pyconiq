@@ -1,10 +1,8 @@
 [tool.poetry]
 name = "pyconiq"
-version = "0.0.1.dev0"
+version = "0.0.1"
 description = "Unofficial Python package to interface with the payment processor Payconiq."
-authors = [
-    "Joeri Hermans <joeri@peinser.com>",
-]
+authors = ["Joeri Hermans <joeri@peinser.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -60,10 +58,7 @@ extend-select = [
     "TID", # flake8-tidy-imports
     "UP",  # pyupgrade
 ]
-extend-exclude = [
-    "docs/*",
-    "tests/fixtures/exceptions/*"
-]
+extend-exclude = ["docs/*", "tests/fixtures/exceptions/*"]
 
 ignore = [
     "E722", # Bare exceptions
@@ -93,10 +88,7 @@ show_error_codes = true
 
 [tool.coverage.run]
 branch = true
-omit = [
-    "src/pyconiq/__init__.py",
-    "src/pyconiq/__version__.py",
-]
+omit = ["src/pyconiq/__init__.py", "src/pyconiq/__version__.py"]
 
 [tool.coverage.report]
 show_missing = true
@@ -104,7 +96,7 @@ fail_under = 75
 exclude_lines = [
     "pragma: no cover",
     "if TYPE_CHECKING:",
-    "raise NotImplementedError"
+    "raise NotImplementedError",
 ]
 
 [[tool.poetry.source]]
