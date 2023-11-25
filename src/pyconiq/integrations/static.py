@@ -3,6 +3,8 @@ r"""
 
 from __future__ import annotations
 
+import functools
+
 from dataclasses import dataclass
 from enum import StrEnum
 from http import HTTPStatus
@@ -13,6 +15,14 @@ import ujson
 
 from pyconiq.constants import PYCONIQ_API_BASE
 from pyconiq.constants import PYCONIQ_API_KEY_STATIC
+from pyconiq.exceptions import ForbiddenTransactionError
+from pyconiq.exceptions import PayconiqTechnicalError
+from pyconiq.exceptions import PayconiqUnavailableError
+from pyconiq.exceptions import RateLimitError
+from pyconiq.exceptions import TransactionNotPendingError
+from pyconiq.exceptions import UnauthorizedError
+from pyconiq.exceptions import UnknownTransactionError
+from pyconiq.exceptions import UnknownTransactionStatusError
 from pyconiq.integrations.base import BaseIntegration
 
 
@@ -54,28 +64,28 @@ class StaticIntegration(BaseIntegration):
 
         async with aiohttp.ClientSession() as session, session.delete(
             url=endpoint,
-            headers={"Authorization": f"Bearer {self._key}"},
+            headers=self._headers,
         ) as response:
             if not response.ok:
                 status = response.status
-                response = await response.json()
+                payload: dict[str, Any] = await response.json()
                 match status:
                     case HTTPStatus.UNAUTHORIZED:
-                        raise UnauthorizedError(response, self)
+                        raise UnauthorizedError(payload, self)
                     case HTTPStatus.FORBIDDEN:
-                        raise ForbiddenError(response, self)
+                        raise ForbiddenTransactionError(payload, self)
                     case HTTPStatus.NOT_FOUND:
-                        raise UnknownTransactionError(response, transaction)
+                        raise UnknownTransactionError(payload, transaction)
                     case HTTPStatus.UNPROCESSABLE_ENTITY:
-                        raise TransactionNotPendingError(response, transaction)
+                        raise TransactionNotPendingError(payload, transaction)
                     case HTTPStatus.TOO_MANY_REQUESTS:
-                        raise RateLimitError(response, self)
+                        raise RateLimitError(payload)
                     case HTTPStatus.INTERNAL_SERVER_ERROR:
-                        raise TechnicalError(response, self)
+                        raise PayconiqTechnicalError(payload)
                     case HTTPStatus.SERVICE_UNAVAILABLE:
-                        raise PayconiqUnavailableError(response, self)
+                        raise PayconiqUnavailableError(payload)
                     case _:
-                        raise UnkownError(response)
+                        raise Exception(payload)
 
         # Set the transaction to CANCELLED.
         transaction.status = TransactionStatus.CANCELLED
@@ -114,7 +124,7 @@ class StaticIntegration(BaseIntegration):
 
         async with aiohttp.ClientSession() as session, session.post(
             url=f"{self._base}/v3/payments/pos",
-            headers={"Authorization": f"Bearer {self._key}"},
+            headers=self._headers,
             json=payload,
         ) as response:
             assert response.status == 201  # Payment Request created.
@@ -158,8 +168,14 @@ class TransactionLinks:
 
 
 class TransactionStatus(StrEnum):
-    CANCELLED = "CANCELLED"
-    PENDING = "PENDING"
+    AUTHORIZATION_FAILED: Final = "AUTHORIZATION_FAILED"
+    AUTHORIZED: Final = "AUTHORIZED"
+    CANCELLED: Final = "CANCELLED"
+    EXPIRED: Final = "EXPIRED"
+    FAILED: Final = "FAILED"
+    IDENTIFIED: Final = "IDENTIFIED"
+    PENDING: Final = "PENDING"
+    SUCCEEDED: Final = "SUCCEEDED"
 
     @staticmethod
     def parse(state: dict[str, Any]) -> TransactionStatus:
@@ -184,15 +200,17 @@ class Transaction:
     def __init__(
         self,
         integration: StaticIntegration,
-        **kwargs: dict[str, Any],
+        **kwargs,
     ) -> None:
         self._integration = integration
         self._state = kwargs
         self.links = TransactionLinks.parse(kwargs)
 
-    @property
+    @functools.cached_property
     def id(self) -> str:
-        return self._state.get("paymentId")
+        identifier = self._state.get("paymentId")
+        assert identifier is not None
+        return identifier
 
     @property
     def status(self) -> str:
@@ -210,8 +228,11 @@ class Transaction:
     def json(self) -> dict:
         return self._state
 
-    def is_pending(self) -> bool:
+    def pending(self) -> bool:
         return self.status == TransactionStatus.PENDING
+
+    def succeeded(self) -> bool:
+        return self.status == TransactionStatus.SUCCEEDED
 
     async def cancel(self) -> None:
         await self._integration.cancel(self)
