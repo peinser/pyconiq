@@ -52,6 +52,9 @@ your account. In particular, your mobile phone number, address, Tax ID (if avail
 and company name amongst others. The onboarding procedure is outlined
 [here](https://developer.payconiq.com/online-payments-dock/).
 
+> [!IMPORTANT]
+> You will have to provide a _default_ callback URL to the support team that Payconiq will use to send updates regarding payment requests and transactions.
+
 Once onboarded by the support team, you'll most likely have access to the
 `EXT` infrastructure. This means you have access to the necessary API keys and unique
 merchant identifier. In the wild, the most common integration a consumer will experience
@@ -105,7 +108,7 @@ qr = pyconiq.qr.static(merchant=merchant, pos=point_of_sale_id)
 qr.print_ascii(tty=True)
 ```
 
-this produces the following QR code (in your terminal) for our test Merchant
+this produces the following QR code (in your terminal) for our test Merchant;
 
 ```console
 █▀▀▀▀▀▀▀██▀█████▀▀▀█▀█▀▀▀▀█▀▀▀▀▀▀▀█
@@ -128,9 +131,45 @@ this produces the following QR code (in your terminal) for our test Merchant
 ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 ```
 
-**Important**: the infrastructure supporting the External build is switched off
-each day from 21h30(CET) to 6h00 (CET) and during the weekends from Friday 21h30 (CET)
-until Monday 6h00 (CET).
+Once the QR code has been generated, we can now create payment requests (which we
+call transactions internally). Such requests are allocated through "Integrations".
+For this particular type, we're using a `StaticIntegration`, which corresponds to the
+integration supported the previously generated static QR code.
+
+```python
+# Initiate a payment request with a static QR integration.
+integration = StaticIntegration(merchant=merchant)
+transaction = await integration.create(
+  amount=2000,  # IMPORTANT: Amount is in Eurocent
+  pos=point_of_sale_id,
+  reference="PYCONIQ TEST",  # Reference that will appear as a reference in the bank log.
+)
+```
+
+At this point, the transaction has been allocated and is currently in a `PENDING` state.
+For the Static QR integration, transactions remain in a `PENDING` state for about 2
+minutes before expiring. Updates regarding payment information will be provided through
+the callback URL. However, if you're simply testing locally, you can poll the status
+of the transaction like this:
+
+```python
+#Just scan the QR code now.
+while not transaction.terminal():  # Is the transaction in a `terminal` state?
+  await asyncio.sleep(1)
+  await transaction.update()
+
+if transaction.expired():
+  print("Failed to pay on time :(")
+elif transaction.succeeded():
+  print("Paid!")
+elif transaction.cancelled():
+  print("The transaction was cancelled!")
+else:
+  print("Some other status :/")
+```
+
+> [!IMPORTANT]
+> The infrastructure supporting the External build is switched off each day from 21h30(CET) to 6h00 (CET) and during the weekends from Friday 21h30 (CET) until Monday 6h00 (CET).
 
 Detailed information regarding the Payconiq's API specification can be found
 [here](https://developer.payconiq.com/online-payments-dock/).
