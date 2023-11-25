@@ -149,6 +149,9 @@ transaction = await integration.create(
 )
 ```
 
+> [!TIP]
+> You can specify custom Callback URL's using the `callback` parameter when creating transactions.
+
 At this point, the transaction has been allocated and is currently in a `PENDING` state.
 For the Static QR integration, transactions remain in a `PENDING` state for about 2
 minutes before expiring. Updates regarding payment information will be provided through
