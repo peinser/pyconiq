@@ -95,6 +95,9 @@ point_of_sale_id = "test"
 # the merchant identifier.
 merchant = pyconiq.merchant()
 
+# Alternatively, the merchant can be generated as.
+merchant = pyconiq.merchant(merchant_id="YourMerchantIdentifier")
+
 # Second, we need a QR code that is associated with our PoS (point of sale).
 # In this case, the identifier of the PoS is `test`.
 qr = pyconiq.qr.static(merchant=merchant, pos=point_of_sale_id)
