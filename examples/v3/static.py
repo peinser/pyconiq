@@ -8,6 +8,7 @@ developer.payconiq.com/online-payments-dock/#creating-the-payconiq-static-qr-cod
 from __future__ import annotations
 
 import asyncio
+import pprint
 
 import uvloop
 
@@ -32,14 +33,18 @@ async def main() -> None:
 
     # Initiate a payment request with a static QR integration.
     integration = StaticIntegration(merchant=merchant)
-    payment = await integration.request(
+    transaction = await integration.request(
         amount=2000,  # In Eurocent
         pos=point_of_sale_id,
         reference="PYCONIQ TEST",
     )
 
     # Object denoting the current state of the payment.
-    print(payment)
+    pprint.pprint(transaction.json, compact=True, indent=2)
+
+    # Cancel the pending transaction.
+    cancelled = await transaction.cancel()
+    print("Cancelled?", cancelled)
 
 
 with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:
