@@ -67,6 +67,8 @@ async def main() -> None:
         print("Failed to pay on time :(")
     elif transaction.succeeded():
         print("Paid!")
+    elif transaction.cancelled():
+        print("The transaction was cancelled!")
     else:
         print("Some other status :/")
 
