@@ -19,6 +19,9 @@ _Unofficial_ `async` Python module to interface with the payment processor
 
 ## Introduction
 
+> [!WARNING]
+> This is an initial PoC and integration of the module. The API will most likely change in future releases.
+
 ### Installation
 
 The module can be directly installed through pip:
