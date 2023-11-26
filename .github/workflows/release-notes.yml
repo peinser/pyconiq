@@ -8,7 +8,6 @@ on:
     - .changelog/**
     - CHANGELOG.md
     - pyproject.yml
-    - src/**
 
 jobs:
 
