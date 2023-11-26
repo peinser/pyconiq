@@ -1,5 +1,5 @@
 name: Release Notes
-run-name: ${{ github.actor }} is generating the Release Notes.
+run-name: ${{ github.actor }} is comparing the Release Notes
 
 on:
   workflow_dispatch:
