@@ -36,4 +36,4 @@ jobs:
         git fetch --no-tags origin +refs/heads/${BASE_BRANCH}:refs/remotes/origin/${BASE_BRANCH}
         towncrier check --compare-with origin/${BASE_BRANCH}
       env:
-        BASE_BRANCH: ${{ github.base_ref }}
+        BASE_BRANCH: $${{ github.event.pull_request.base.ref }}
