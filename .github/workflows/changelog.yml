@@ -30,5 +30,4 @@ jobs:
         pip install towncrier
     - name: Check for presence of a Change Log fragment (only PRs)
       run: |
-        git fetch --no-tags origin +refs/heads/${BASE_BRANCH}:refs/remotes/origin/${BASE_BRANCH}
         towncrier check --compare-with origin/${{ github.base_ref }}
