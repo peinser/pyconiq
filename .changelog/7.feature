@@ -1,1 +1,0 @@
-Add support for Towncrier-based changelogs and GitHub action.
