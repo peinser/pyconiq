@@ -37,4 +37,3 @@ jobs:
         towncrier check --compare-with origin/${BASE_BRANCH}
       env:
         BASE_BRANCH: ${{ github.base_ref }}
-      if: github.event_name == 'pull_request'
