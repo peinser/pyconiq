@@ -5,8 +5,10 @@ on:
   workflow_dispatch:
   push:
     paths:
-    - changes/**
+    - .changelog/**
+    - CHANGELOG.md
     - pyproject.yml
+    - src/**
 
 jobs:
 
