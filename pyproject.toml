@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyconiq"
-version = "0.0.2"
+version = "0.0.3.dev0"
 description = "Unofficial Python package to interface with the payment processor Payconiq."
 authors = ["Joeri Hermans <joeri@peinser.com>"]
 readme = "README.md"
@@ -27,6 +27,7 @@ pytest-asyncio = "^0.21.1"
 types-ujson = "^5.8.0.1"
 virtualenv = "^20.24.7"
 uvloop = "^0.19.0"
+towncrier = "^23.11.0"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.2"
@@ -85,6 +86,14 @@ check_untyped_defs = true
 warn_return_any = true
 warn_unused_ignores = true
 show_error_codes = true
+
+[tool.towncrier]
+directory = ".changelog"
+package = "pyconiq"
+name = "pyconiq"
+package_dir = "src"
+filename = "CHANGELOG.md"
+title_format = "{version} ({project_date})"
 
 [tool.coverage.run]
 branch = true
