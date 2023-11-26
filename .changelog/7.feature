@@ -1,0 +1,1 @@
+Add support for Towncrier-based changelogs.
