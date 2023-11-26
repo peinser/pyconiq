@@ -29,10 +29,5 @@ jobs:
         installer-parallel: true
     - name: Check for presence of a Change Log fragment (only PRs)
       run: |
-        # Fetch the pull request' base branch so towncrier will be able to
-        # compare the current branch with the base branch.
-        # Source: https://github.com/actions/checkout/#fetch-all-branches.
-        git fetch --no-tags origin +refs/heads/${BASE_BRANCH}:refs/remotes/origin/${BASE_BRANCH}
-        towncrier check --compare-with origin/${BASE_BRANCH}
-      env:
-        BASE_BRANCH: $${{ github.event.pull_request.base.ref }}
+        git fetch --no-tags
+        towncrier check
