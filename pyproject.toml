@@ -88,7 +88,12 @@ warn_unused_ignores = true
 show_error_codes = true
 
 [tool.towncrier]
-directory = "changes"
+directory = ".changelog"
+package = "pyconiq"
+name = "pyconiq"
+package_dir = "src"
+filename = "CHANGELOG.md"
+title_format = "{version} ({project_date})"
 
 [tool.coverage.run]
 branch = true
