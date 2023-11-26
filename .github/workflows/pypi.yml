@@ -1,5 +1,5 @@
 name: PyPI
-run-name: ${{ github.actor }} is publishing a PyPI release
+run-name: ${{ github.actor }} is publishing a PyPI release.
 
 on:
   workflow_dispatch:
