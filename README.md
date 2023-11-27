@@ -73,13 +73,14 @@ _default_ `PROD` infrastructure.
 
 | Variable | Default | Context |
 |---|---|---|
-| `PYCONIQ_BASE` | `https://payconiq.com` | TODO |
+| `PYCONIQ_BASE` | `https://payconiq.com` | Base endpoint of Payconiq.com. |
 | `PYCONIQ_API_BASE` | `https://api.payconiq.com` | The primary API endpoint of Payconiq (or some mock service). By default this variable will target the Payconiq production environment. For the `EXT` environment this variable should be set to `https://api.ext.payconiq.com`. Note that setting this environment variable is not necessary. It can be defined in the codebase when allocating specific integrations. |
 | `PYCONIQ_DEFAULT_MERCHANT` | `None` | Default Merchant ID that will be used when allocating merchants. |
 | `PYCONIQ_API_KEY_STATIC` | `None` | Default API key for the Static QR code integration. |
 | `PYCONIQ_API_KEY_INVOICE` | `None` | Default API key for the Invoice integration whenever no key is manually specified. |
 | `PYCONIQ_API_KEY_RECEIPT` | `None` | Default API key for the Receipt integration whenever no key is manually specified. |
 | `PYCONIQ_API_KEY_APP2APP` | `None` | Default API key for the App2App integration whenever no key is manually specified. |                                                                                                                                                                                    |
+| `PYCONIQ_PAYMENT_PROFILE_STATIC` | `None` | Payment profile identifier of the Static QR code integration |
 
 ### Example
 
@@ -88,6 +89,9 @@ integration, you need a QR code for your customers to scan. You can obtain this 
 code through Payconiq's API. However, `pyconiq` provides a utility to generate
 this on the fly for you, with various error correction levels and customization options.
 This functionality is powered by the awesome [`qrcode`](https://github.com/lincolnloop/python-qrcode) module.
+
+> [!TIP]
+> Note, the default merchant identifier and the default payment profile for the static can be set through the `PYCONIQ_DEFAULT_MERCHANT` and `PYCONIQ_PAYMENT_PROFILE_STATIC` environment variables respectively.
 
 ```python
 import pyconiq.qr
@@ -104,9 +108,11 @@ merchant = pyconiq.merchant()
 # Alternatively, the merchant can be generated as.
 merchant = pyconiq.merchant(merchant_id="YourMerchantIdentifier")
 
+integration = StaticIntegration(merchant=merchant, profile="YourPaymentProfileId)
+
 # Second, we need a QR code that is associated with our PoS (point of sale).
 # In this case, the identifier of the PoS is `test`.
-qr = pyconiq.qr.static(merchant=merchant, pos=point_of_sale_id)
+qr = pyconiq.qr.static(integration=integration, pos=point_of_sale_id)
 # Show the QR code in the terminal.
 qr.print_ascii(tty=True)
 ```
@@ -114,24 +120,22 @@ qr.print_ascii(tty=True)
 this produces the following QR code (in your terminal) for our test Merchant;
 
 ```console
-█▀▀▀▀▀▀▀██▀█████▀▀▀█▀█▀▀▀▀█▀▀▀▀▀▀▀█
-█ █▀▀▀█ █▄ ▀ ▄█▀█▀█▄█▀  ███ █▀▀▀█ █
-█ █   █ █▄▄▀▄▀▀▀▀▄▄▄▀▀▀▄▀▀█ █   █ █
-█ ▀▀▀▀▀ █ █ █▀▄ ▄ █▀█▀▄ █ █ ▀▀▀▀▀ █
-█▀▀▀▀▀█▀▀▀▀▀█ ▄▀ █▀▄▄▀▄▀▄█▀█▀█▀█▀██
-█▀▄██▄█▀██ █▀▀██▄▄█ ▄█ ▀▄▄▄▄██▀▄ ▄█
-███ ▄▀▀▀██ ▄ ██▄█ ▀▀▄▀▄█ ▀▄█  ▀▄███
-█  █▀▄▀▀▀█▄▄█▄   ▀██▄█  ▄▄▀ ▀▀██ ▄█
-████▄  ▀██▀ █ ▄▀ █▀ █ ▄▀█▄▀▄▀ █▄▀██
-█▄ █▄▄ ▀▀▄█▀▀▀██▄▄▄▀▄▀▄█▄▄█▄█▀ █ ▄█
-█▀█▀▀▄▀▀▄▄ █ ██▄█▄▀▄█ ▄█ ▀ ▄▀ █▄▀██
-█ █▄▀▄▄▀  ▄▀█▄   █▀ ▄█▄▄▄ ▀ █▀ █ ▄█
-█ █ █▀▄▀ █▄▀█ ▄▀  ▀ ▀▀▄▄▀▀   ▀ ▄█▀█
-█▀▀▀▀▀▀▀█ █▄▀▀██▀  ▄▄█▄ ▀ █▀█ █ ▀▄█
-█ █▀▀▀█ █▀▀  ██▄▀▀▀█▄▀▄▄▄ ▀▀▀ ▄▄▀▄█
-█ █   █ █ █▀█▄  ▀ ██▄█   █▄▀▄▄▀ ▄▄█
-█ ▀▀▀▀▀ █ ▄▄█ ▄▀ ▄▀▄▀▀▄██▀ ▄▀▀ ▄▀██
-▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+█▀▀▀▀▀▀▀██▀██▀█▀███▀█▀█▀▀▀▀▀▀▀█
+█ █▀▀▀█ █▀▀ ▄ █▀ ▄███▀█ █▀▀▀█ █
+█ █   █ ██▄ ▄█▄ ██▄  ▄█ █   █ █
+█ ▀▀▀▀▀ █▀▄▀█▀▄▀▄▀▄▀▄▀█ ▀▀▀▀▀ █
+█▀▀▀█▀▀▀▀ ▄ ▀▄▄▀▀█ ▄ █▀▀███▀███
+███▄▀ ▀▀▀█▀▄▄█▀██ █ ▄▄▄▄█▄██ ▀█
+█▄▀   ▄▀█ ██▄▀██▄ ▄▀ ▀▄█▀█ █▀▀█
+████▄█▀▀█▄▄▀  ▄▀█▀█   ▀███▀   █
+█  █▀▀▄▀▄▀▀▀▀▄▄ ▀▄█▀ ▄▀█▄█▀ ▄▄█
+█▀▄▀█▀█▀▀▀  ▄█▀▄▄  █▄█▄▄  █▀▄▄█
+█▀▄▀  ▀▀▀▀ █▄▀██ █  ▄ ▀▀▀ ███▀█
+█▀▀▀▀▀▀▀█ ▄▄  ▄▀▀ █▀█ █▀█ ▀▄█ █
+█ █▀▀▀█ █ ▄▀▀▄▄ █▀▄█  ▀▀▀ █ █▄█
+█ █   █ █▀ ▀▄█▀▄▄ █▄▀  ██ ▄▀█▀█
+█ ▀▀▀▀▀ █ █▀▄▀██▀▀▄█▄██ █▀▀ ▄ █
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
 ```
 
 Once the QR code has been generated, we can now create payment requests (which we
@@ -141,7 +145,6 @@ integration supported the previously generated static QR code.
 
 ```python
 # Initiate a payment request with a static QR integration.
-integration = StaticIntegration(merchant=merchant)
 transaction = await integration.create(
   amount=2000,  # IMPORTANT: Amount is in Eurocent
   pos=point_of_sale_id,

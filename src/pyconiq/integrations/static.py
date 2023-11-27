@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import aiohttp
 
+from pyconiq.constants import PAYCONIQ_PAYMENT_PROFILE_STATIC
 from pyconiq.constants import PYCONIQ_API_BASE
 from pyconiq.constants import PYCONIQ_API_KEY_STATIC
 from pyconiq.integrations.base import BaseIntegration
@@ -22,12 +23,18 @@ class StaticIntegration(BaseIntegration):
     def __init__(
         self,
         merchant: Merchant,
+        profile: str | None = PAYCONIQ_PAYMENT_PROFILE_STATIC,
         key: str | None = PYCONIQ_API_KEY_STATIC,
         base: str = PYCONIQ_API_BASE,
         callback: str | None = None,
     ) -> None:
-        assert key is not None
-        super().__init__(merchant=merchant, key=key, base=base)
+        assert profile is not None and key is not None
+        super().__init__(
+            merchant=merchant,
+            profile=profile,
+            key=key,
+            base=base,
+        )
 
         self._callback = callback
 

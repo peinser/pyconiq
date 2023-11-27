@@ -23,28 +23,30 @@ async def main() -> None:
     # Assign a unique identifier to your point of sale.
     point_of_sale_id = "test"
 
-    # Set your merchant configuration.
-    merchant = pyconiq.merchant(merchant_id="655dd4b3748285422d94a48b")
+    # Note, you should set the environment variables.
+    # !!! Important !!!
+    # - PYCONIQ_DEFAULT_MERCHANT
+    # - PYCONIQ_PAYMENT_PROFILE_STATIC
 
-    # Second, we need a QR code that is associated with our PoS (point of sale).
-    # In this case, the identifier of the PoS is `test`.
-    qr = pyconiq.qr.static(merchant=merchant, pos=point_of_sale_id)
-    # Show the QR code in the terminal.
-    qr.print_ascii(tty=True)
+    # Set your merchant configuration.
+    merchant = pyconiq.merchant()
 
     # Initiate a payment request with a static QR integration.
     integration = StaticIntegration(merchant=merchant)
+
+    # Second, we need a QR code that is associated with our PoS (point of sale).
+    # In this case, the identifier of the PoS is `test`.
+    qr = pyconiq.qr.static(integration=integration, pos=point_of_sale_id)
+    # Show the QR code in the terminal.
+    qr.print_ascii(tty=True)
+    qr.make_image().save("static.png")
+
+    # Create a new payment request.
     transaction = await integration.create(
         amount=2000,  # In Eurocent
         pos=point_of_sale_id,
         reference="PYCONIQ TEST",
     )
-
-    # Object denoting the current state of the payment.
-    pprint.pprint(transaction.json, compact=True, indent=2)
-
-    # Cancel the pending transaction.
-    await transaction.cancel()
 
     # It is also possible to fetch a transaction by its ID. (re-use ID for ease).
     transaction = await integration.details(transaction.id)
@@ -56,7 +58,6 @@ async def main() -> None:
 
     # Or simply directly through the transaction object.
     await transaction.update()
-    pprint.pprint(transaction.json, compact=True, indent=2)
 
     # Enough demonstrations :) Just scan the QR code now.
     while not transaction.terminal():

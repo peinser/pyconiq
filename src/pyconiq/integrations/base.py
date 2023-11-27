@@ -33,10 +33,17 @@ if TYPE_CHECKING:
 
 
 class BaseIntegration(ABC):
-    def __init__(self, merchant: Merchant, key: str, base: str):
+    def __init__(
+        self,
+        merchant: Merchant,
+        profile: str,
+        key: str,
+        base: str,
+    ):
         super().__init__()
         self._base = base
         self._merchant = merchant
+        self._profile = profile
         self._key = key
 
     @functools.cached_property
@@ -101,6 +108,10 @@ class BaseIntegration(ABC):
     @property
     def merchant(self) -> Merchant:
         return self._merchant
+
+    @property
+    def profile(self) -> str:
+        return self._profile
 
     @abstractmethod
     async def cancel(self, transaction: Transaction) -> None:
